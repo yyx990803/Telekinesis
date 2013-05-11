@@ -1,0 +1,1 @@
+User input gesture simulation for test automation.
