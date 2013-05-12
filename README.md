@@ -1,4 +1,4 @@
-# Telekinesis
+# Telekinesis [![Build Status](https://travis-ci.org/yyx990803/Telekinesis.png?branch=master)](https://travis-ci.org/yyx990803/Telekinesis)
 
 > User input gesture simulation for test automation.
 
