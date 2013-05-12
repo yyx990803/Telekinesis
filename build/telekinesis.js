@@ -20,7 +20,8 @@ window.Telekinesis = function () {
 
     var fingers      = [],
         id           = 0,
-        touchRE      = /^touch/
+        touchRE      = /^touch.+/,
+        mouseRE      = /^mouse.+/
 
     function Finger (type) {
         this.identifier = id
@@ -79,12 +80,16 @@ window.Telekinesis = function () {
     }
 
     function createPayload (target) {
-        var left = document.documentElement.scrollLeft || document.body.scrollLeft,
-            top = document.documentElement.scrollTop || document.body.scrollTop,
+        var left = document.body.scrollLeft || document.documentElement.scrollLeft,
+            top = document.body.scrollTop || document.documentElement.scrollTop,
+            screenX = window.screenX || window.screenLeft,
+            screenY = window.screenY || window.screenTop,
             point = {
                 identifier: this.identifier,
                 clientX: this.x,
                 clientY: this.y,
+                screenX: this.x + screenX,
+                screenY: this.y + screenY,
                 pageX: this.x + left,
                 pageY: this.y + top,
                 target: target
@@ -131,7 +136,13 @@ window.Telekinesis = function () {
     // general custom event dispatcher
 
     function synthesizeEvent (eventName, payload, target) {
-        var event = document.createEvent('CustomEvent')
+        var event
+        if (eventName.match(mouseRE)) {
+            event = document.createEvent('MouseEvents')
+        } else {
+            // TouchEvent/PointerEvent not available yet
+            event = document.createEvent('CustomEvent')
+        }
         event.initEvent(eventName, true, true)
         for (var k in payload) {
             event[k] = payload[k]
