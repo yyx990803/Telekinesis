@@ -61,8 +61,6 @@
                         ok(e.touches && e.targetTouches && e.changedTouches, 'event should have touchLists')
                     }
 
-                    console.log(e)
-
                     var x = e.clientX || e.changedTouches[0].clientX,
                         y = e.clientY || e.changedTouches[0].clientY
                     ok(x === finger.x && y === finger.y, 'x & y values should equal to event\'s clientX and clientY')
@@ -143,7 +141,7 @@
                     .moveBy(dx, dy)
             })
 
-            test('Custom payload 1', function () {
+            test('Custom payload', function () {
                 testEl.addEventListener(down, function (e) {
                     start()
                     equal(e.ctrlKey, true, 'ctrlKey property should be true')
