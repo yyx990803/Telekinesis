@@ -18,6 +18,10 @@ module.exports = function( grunt ) {
             all: ['src/**/*.js']
         },
 
+        qunit: {
+            all: ['test/*.html']
+        },
+
         concat: {
             build: {
                 dest: 'build/telekinesis.js',
@@ -43,13 +47,13 @@ module.exports = function( grunt ) {
             }
         }
     })
-
-    // Load necessary plugins
+    
+    grunt.loadNpmTasks( 'grunt-contrib-jshint' )
+    grunt.loadNpmTasks( 'grunt-contrib-qunit' )
     grunt.loadNpmTasks( 'grunt-contrib-concat' )
     grunt.loadNpmTasks( 'grunt-contrib-uglify' )
-    grunt.loadNpmTasks( 'grunt-contrib-jshint' )
     grunt.loadNpmTasks( 'grunt-contrib-watch' )
 
-    grunt.registerTask( 'default', [ 'jshint', 'concat', 'uglify' ] )
+    grunt.registerTask( 'default', [ 'jshint', 'qunit', 'concat', 'uglify' ] )
 
 }

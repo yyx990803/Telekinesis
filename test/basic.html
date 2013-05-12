@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Telekinesis.js Test - Basic</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="http://code.jquery.com/qunit/qunit-git.js"></script>
+        <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css" type="text/css" charset="utf-8">
+        <script src="../build/telekinesis.js"></script>
+        <style type="text/css">
+            #test {
+                position: absolute;
+                top: 50px;
+                left: 50px;
+                width: 50px;
+                height: 50px;
+                background: #f00;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="qunit" style="margin-top:100px"></div>
+        <div id="qunit-fixture">this had better work.</div>
+        <div id="test"></div>
+        <script>
+
+            var testEl = document.getElementById('test'),
+                hasTouch = 'ontouchstart' in window,
+                down, move, up
+
+            if (hasTouch) {
+                down = 'touchstart'
+                move = 'touchmove'
+                up   = 'touchend'
+            } else {
+                down = 'mousedown'
+                move = 'mousemove'
+                up   = 'mouseup'
+            }
+
+            test('Finger.down()', function () {
+                testEl.addEventListener(down, function (e) {
+                    start()
+
+                    ok(true, down + ' event should be triggered')
+                    equal(e.target, testEl, 'event target should be #test')
+
+                    if (hasTouch) {
+                        ok(e.touches && e.targetTouches && e.changedTouches, 'event should have touchLists')
+                    }
+
+                    var x = e.clientX || e.changedTouches[0].clientX,
+                        y = e.clientY || e.changedTouches[0].clientY
+                    ok(x === finger.x && y === finger.y, 'x & y values should equal to event\'s clientX and clientY')
+
+                    testEl.removeEventListener(down, arguments.callee)
+                })
+                stop()
+                Telekinesis.removeAll()
+                var finger = new Telekinesis.Finger()
+                finger.down(75, 75)
+            })
+
+            test('Finger.move()', function () {
+                testEl.addEventListener(move, function (e) {
+                    start()
+                    ok(true, move + ' event should be triggered')
+                    equal(e.target, testEl, 'event target should be #test')
+
+                    if (hasTouch) {
+                        ok(e.touches && e.targetTouches && e.changedTouches, 'event should have touchLists')
+                    }
+
+                    var x = e.clientX || e.changedTouches[0].clientX,
+                        y = e.clientY || e.changedTouches[0].clientY
+                    ok(x === finger.x && y === finger.y, 'x & y values should equal to event\'s clientX and clientY')
+
+                    testEl.removeEventListener(move, arguments.callee)
+                })
+                stop()
+                Telekinesis.removeAll()
+                var finger = new Telekinesis.Finger()
+                finger.move(75, 75)
+            })
+
+            test('Finger.up()', function () {
+                testEl.addEventListener(up, function (e) {
+                    start()
+                    ok(true, up + ' event should be triggered with no args provided')
+                    equal(e.target, testEl, 'event target should be #test')
+
+                    if (hasTouch) {
+                        ok(e.touches && e.targetTouches && e.changedTouches, 'event should have touchLists')
+                    }
+                    
+                    var x = e.clientX || e.changedTouches[0].clientX,
+                        y = e.clientY || e.changedTouches[0].clientY
+                    ok(x === finger.x && y === finger.y, 'x & y values should equal to event\'s clientX and clientY')
+
+                    testEl.removeEventListener(move, arguments.callee)
+                })
+                stop()
+                Telekinesis.removeAll()
+                var finger = new Telekinesis.Finger()
+                finger.move(75, 75)
+                finger.up()
+            })
+
+            test('Finger.moveBy()', function () {
+                testEl.addEventListener(move, function (e) {
+                    start()
+                    ok(true, move + ' event should be triggered')
+                    equal(e.target, testEl, 'event target should be #test')
+                    var x = e.clientX || e.changedTouches[0].clientX,
+                        y = e.clientY || e.changedTouches[0].clientY
+                    ok(x === startingX + dx && y === startingY + dy, 'x & y should increase by given amount')
+                    testEl.removeEventListener(move, arguments.callee)
+                })
+                stop()
+                Telekinesis.removeAll()
+                var finger = new Telekinesis.Finger(),
+                    startingX = 40,
+                    startingY = 35,
+                    dx = 20,
+                    dy = 25
+                finger.down(startingX, startingY)
+                finger.moveBy(dx, dy)
+            })
+
+        </script>
+    </body>
+</html>

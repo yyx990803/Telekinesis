@@ -1,6 +1,8 @@
 ## General
 
 - tests
+    - ~~basic~~
+    - drag
 - examples
 - docs
 
@@ -12,3 +14,7 @@
 - tripletap
 - swipe
 - zoom
+
+## Additional
+
+- mouseout?

@@ -140,7 +140,17 @@ window.Telekinesis = function () {
     }
 
     return {
-        Finger: Finger
+
+        Finger: Finger,
+
+        getAll: function () {
+            return fingers.map(function (f) { return f })
+        },
+
+        removeAll: function () {
+            fingers = []
+            id = 0
+        }
     }
 
 }();
