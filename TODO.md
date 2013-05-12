@@ -1,19 +1,14 @@
-## Dev
+## General
 
-- refine API
-- modularize structure
 - tests
 - examples
 - docs
 
 ## Gestures
 
+- ~~drag~~
 - tap
 - doubletap
 - tripletap
-- zoom
 - swipe
-- two-finger tap
-- two-finger drag
-- two-finger swipe
-- register custom composite gestures
+- zoom
