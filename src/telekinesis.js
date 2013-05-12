@@ -4,7 +4,7 @@ window.Telekinesis = function () {
         mouse: {
             down: 'mousedown',
             move:  'mousemove',
-            up:   'mouseend'
+            up:   'mouseup'
         },
         touch: {
             down: 'touchstart',
@@ -74,11 +74,11 @@ window.Telekinesis = function () {
             console.warn('"' + eventName + '" out of bound at x:' + this.x + ', y:' + this.y)
             return
         }
-        var payload = createPayload.call(this, event, target)
+        var payload = createPayload.call(this, target)
         synthesizeEvent(eventName, payload, target)
     }
 
-    function createPayload (event, target) {
+    function createPayload (target) {
         var left = document.documentElement.scrollLeft || document.body.scrollLeft,
             top = document.documentElement.scrollTop || document.body.scrollTop,
             point = {
