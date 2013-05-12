@@ -88,7 +88,7 @@ window.Telekinesis = function () {
         if (this.type === 'touch') {
             payload = {
                 touches: getAll(),
-                changedTouches: point,
+                changedTouches: [point],
                 targetTouches: getAllByTarget(target)
             }
         } else {
