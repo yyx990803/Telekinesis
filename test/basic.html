@@ -3,8 +3,8 @@
     <head>
         <title>Telekinesis.js Test - Basic</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script src="http://code.jquery.com/qunit/qunit-git.js"></script>
-        <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css" type="text/css" charset="utf-8">
+        <script src="lib/qunit-1.11.0.js"></script>
+        <link rel="stylesheet" href="lib/qunit-1.11.0.css" type="text/css" charset="utf-8">
         <script src="../build/telekinesis.js"></script>
         <style type="text/css">
             #test {
@@ -50,7 +50,7 @@
                 up   = 'mouseup'
             }
 
-            test('Finger.down()', function () {
+            test('Finger.down(x, y)', function () {
                 testEl.addEventListener(down, function (e) {
                     start()
 
@@ -73,7 +73,55 @@
                 finger.down(75, 75)
             })
 
-            test('Finger.move()', function () {
+            test('Finger.down(x, y, payload)', function () {
+                testEl.addEventListener(down, function (e) {
+                    start()
+                    var ctrlKey = e.ctrlKey || e.changedTouches[0].ctrlKey,
+                        button = e.button || e.changedTouches[0].button
+                    equal(ctrlKey, true, 'ctrlKey property should be true')
+                    equal(button, 2, 'button property should be 2')
+                    testEl.removeEventListener(down, arguments.callee)
+                })
+                stop()
+                Telekinesis.removeAll()
+                var finger = new Telekinesis.Finger()
+                finger.down(75, 75, {
+                    ctrlKey: true,
+                    button: 2
+                })
+            })
+
+            test('Finger.down(element, payload)', function () {
+                testEl.addEventListener(down, function (e) {
+                    start()
+                    ok(true, down + ' event should be triggered')
+                    equal(e.target, testEl, 'event target should be #test')
+                    var button = e.button || e.changedTouches[0].button
+                    equal(button, 2, 'payload should be delivered')
+                    testEl.removeEventListener(down, arguments.callee)
+                })
+                stop()
+                Telekinesis.removeAll()
+                var finger = new Telekinesis.Finger()
+                finger.down(testEl, { button: 2 })
+            })
+
+            test('Finger.down(selector, payload)', function () {
+                testEl.addEventListener(down, function (e) {
+                    start()
+                    ok(true, down + ' event should be triggered')
+                    equal(e.target, testEl, 'event target should be #test')
+                    var button = e.button || e.changedTouches[0].button
+                    equal(button, 2, 'payload should be delivered')
+                    testEl.removeEventListener(down, arguments.callee)
+                })
+                stop()
+                Telekinesis.removeAll()
+                var finger = new Telekinesis.Finger()
+                finger.down('#test', { button: 2 })
+            })
+
+            test('Finger.move(x, y)', function () {
                 testEl.addEventListener(move, function (e) {
                     start()
                     ok(true, move + ' event should be triggered')
@@ -93,6 +141,28 @@
                 Telekinesis.removeAll()
                 var finger = new Telekinesis.Finger()
                 finger.move(75, 75)
+            })
+
+            test('Finger.up(x, y)', function () {
+                testEl.addEventListener(up, function (e) {
+                    start()
+                    ok(true, up + ' event should be triggered')
+                    equal(e.target, testEl, 'event target should be #test')
+
+                    if (hasTouch) {
+                        ok(e.touches && e.targetTouches && e.changedTouches, 'event should have touchLists')
+                    }
+                    
+                    var x = e.clientX || e.changedTouches[0].clientX,
+                        y = e.clientY || e.changedTouches[0].clientY
+                    ok(x === finger.x && y === finger.y, 'x & y values should equal to event\'s clientX and clientY')
+
+                    testEl.removeEventListener(up, arguments.callee)
+                })
+                stop()
+                Telekinesis.removeAll()
+                var finger = new Telekinesis.Finger()
+                finger.up(75, 75)
             })
 
             test('Finger.up()', function () {
@@ -119,7 +189,24 @@
                     .up()
             })
 
-            test('Finger.moveBy()', function () {
+            test('Finger.up(payload)', function () {
+                testEl.addEventListener(up, function (e) {
+                    start()
+                    var shiftKey = e.shiftKey || e.changedTouches[0].shiftKey
+                    equal(shiftKey, true, 'shiftKey property should be true')
+                    testEl.removeEventListener(up, arguments.callee)
+                })
+                stop()
+                Telekinesis.removeAll()
+                var finger = new Telekinesis.Finger()
+                finger
+                    .down(75, 75)
+                    .up({
+                        shiftKey: true
+                    })
+            })
+
+            test('Finger.moveBy(dx, dy)', function () {
                 testEl.addEventListener(move, function (e) {
                     start()
                     ok(true, move + ' event should be triggered')
@@ -139,38 +226,6 @@
                 finger
                     .down(startingX, startingY)
                     .moveBy(dx, dy)
-            })
-
-            test('Custom payload', function () {
-                testEl.addEventListener(down, function (e) {
-                    start()
-                    equal(e.ctrlKey, true, 'ctrlKey property should be true')
-                    equal(e.button, 2, 'button property should be 2')
-                    testEl.removeEventListener(down, arguments.callee)
-                })
-                stop()
-                Telekinesis.removeAll()
-                var finger = new Telekinesis.Finger()
-                finger.down(75, 75, {
-                    ctrlKey: true,
-                    button: 2
-                })
-            })
-
-            test('Custom payload for Finger.up() with no x & y', function () {
-                testEl.addEventListener(up, function (e) {
-                    start()
-                    equal(e.shiftKey, true, 'shiftKey property should be true')
-                    testEl.removeEventListener(up, arguments.callee)
-                })
-                stop()
-                Telekinesis.removeAll()
-                var finger = new Telekinesis.Finger()
-                finger
-                    .down(75, 75)
-                    .up({
-                        shiftKey: true
-                    })
             })
 
         </script>

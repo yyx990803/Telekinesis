@@ -36,7 +36,15 @@ window.Telekinesis = function () {
     Finger.prototype = {
 
         down: function (x, y, payload) {
-            if (x instanceof HTMLElement) {
+            if (x instanceof HTMLElement || typeof x === 'string') {
+                if (typeof x === 'string') {
+                    x = document.querySelector(x)
+                    if (!x) {
+                        console.warn('Finger.down() selector matched no target.')
+                        return
+                    }
+                }
+                payload = y
                 var rect = x.getBoundingClientRect()
                 x = rect.left + rect.width / 2
                 y = rect.top  + rect.height / 2
@@ -100,6 +108,12 @@ window.Telekinesis = function () {
             },
             payload
 
+        for (var e in extras) {
+            if (!(e in point)) {
+                point[e] = extras[e]
+            }
+        }
+
         this.target = target
         this.point  = point
 
@@ -111,10 +125,6 @@ window.Telekinesis = function () {
             }
         } else {
             payload = point
-        }
-
-        for (var e in extras) {
-            payload[e] = extras[e]
         }
 
         return payload

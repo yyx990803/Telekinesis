@@ -8,7 +8,7 @@
 
 ## Gestures
 
-- ~~drag~~
+- drag - Refine API
 - tap
 - doubletap
 - tripletap
