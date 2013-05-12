@@ -8,5 +8,8 @@
     "grunt-contrib-watch": "~0.4.2",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-qunit": "~0.2.1"
+  },
+  "scripts": {
+    "test": "grunt test"
   }
 }
