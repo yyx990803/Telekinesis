@@ -27,6 +27,7 @@ window.Telekinesis = function () {
         id += 1
         this.type = type in eventTypes ? type : getDefaultType()
         fingers.push(this)
+        // here the x and y === clientX and clientY
         this.x = 0
         this.y = 0
     }
@@ -34,7 +35,11 @@ window.Telekinesis = function () {
     Finger.prototype = {
 
         down: function (x, y) {
-            // here the x and y === clientX and clientY
+            if (x instanceof HTMLElement) {
+                var rect = x.getBoundingClientRect()
+                x = rect.left + rect.width / 2
+                y = rect.top  + rect.height / 2
+            }
             this.active = true
             emit.call(this, 'down', x, y)
             return this
@@ -49,6 +54,10 @@ window.Telekinesis = function () {
             this.active = false
             emit.call(this, 'up', x, y)
             return this
+        },
+
+        moveBy: function (x, y) {
+            this.move(this.x + x, this.y + y)
         }
 
     }

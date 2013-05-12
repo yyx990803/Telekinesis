@@ -1,46 +1,40 @@
 // TODO draw the two fingers
 
 window.addEventListener('touchstart', function (e) {
-    console.log(e)
+    e = e.changedTouches[0]
+    console.log(e.clientX, e.clientY, e.target.id)
 })
 
 window.addEventListener('touchmove', function (e) {
-    console.log(e)
+    e = e.changedTouches[0]
+    console.log(e.clientX, e.clientY, e.target.id)
 })
 
 window.addEventListener('touchend', function (e) {
-    console.log(e)
+    e = e.changedTouches[0]
+    console.log(e.clientX, e.clientY, e.target.id)
 })
 
-var f1 = new Telekinesis.Finger('touch'),
-    f2 = new Telekinesis.Finger('touch')
+var f = new Telekinesis.Finger()
 
-// finger1
-f1.drag({
-    from: {
-        x: window.innerWidth / 2,
-        y: 60
-    },
-    to: {
-        x: window.innerWidth / 2,
-        y: 300
-    },
+f.drag({
+    on: document.getElementById('test'),
+    from: { x: 50, y: 50 },
+    by: { x: 60, y: 60 },
     done: function () {
-        console.log('touch 1 done!')
+        console.log('drag 1 done')
+        next()
     }
 })
 
-// finger2
-f2.drag({
-    from: {
-        x: window.innerWidth / 2 + 100,
-        y: 60
-    },
-    to: {
-        x: window.innerWidth / 2 + 100,
-        y: 300
-    },
-    done: function () {
-        console.log('touch 2 done!')
-    }
-})
+function next () {
+
+    f.drag({
+        from: { x: 150, y: 50 },
+        by: { x: 0, y: 100 },
+        done: function () {
+            console.log('drag 2 done')
+        }
+    })
+
+}

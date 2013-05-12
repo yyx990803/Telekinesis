@@ -27,6 +27,7 @@ window.Telekinesis = function () {
         id += 1
         this.type = type in eventTypes ? type : getDefaultType()
         fingers.push(this)
+        // here the x and y === clientX and clientY
         this.x = 0
         this.y = 0
     }
@@ -34,7 +35,11 @@ window.Telekinesis = function () {
     Finger.prototype = {
 
         down: function (x, y) {
-            // here the x and y === clientX and clientY
+            if (x instanceof HTMLElement) {
+                var rect = x.getBoundingClientRect()
+                x = rect.left + rect.width / 2
+                y = rect.top  + rect.height / 2
+            }
             this.active = true
             emit.call(this, 'down', x, y)
             return this
@@ -49,6 +54,10 @@ window.Telekinesis = function () {
             this.active = false
             emit.call(this, 'up', x, y)
             return this
+        },
+
+        moveBy: function (x, y) {
+            this.move(this.x + x, this.y + y)
         }
 
     }
@@ -135,18 +144,37 @@ window.Telekinesis = function () {
     }
 
 }();
+// Options:
+// - on     : a target element.
+// - from   : the starting clientX and clientY for the drag. If `on` is set, will be relative to the `on` element.
+// - to     : the ending clientX and clientY for the drag. Will always be relative to the client viewport.
+// - by     : the x and y distance to drag relative to the values in `from`. If set, will ignore values of `to`.
+
 Telekinesis.Finger.prototype.drag = function () {
 
-    var ppm = 1, // default speed 1px/ms
+    var ppm = 0.75, // default speed 75px/ms
         mpf  = 16 // default trigger rate every 16ms
 
     return function (ops) {
 
         var finger = this
 
-        if (!ops.from && !ops.to) {
+        if (!ops.from && (!ops.to || !ops.by)) {
             console.warn('Insufficient options for Telekinesis.drag()')
             return
+        }
+
+        if (ops.on instanceof HTMLElement) {
+            var rect = ops.on.getBoundingClientRect()
+            ops.from.x += rect.left
+            ops.from.y += rect.top
+        }
+
+        if (ops.by && !ops.to) {
+            ops.to = {
+                x: ops.from.x + ops.by.x,
+                y: ops.from.y + ops.by.y
+            }
         }
 
         var dx          = ops.to.x - ops.from.x,
