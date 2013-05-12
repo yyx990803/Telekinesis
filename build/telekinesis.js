@@ -35,37 +35,37 @@ window.Telekinesis = function () {
 
     Finger.prototype = {
 
-        down: function (x, y) {
+        down: function (x, y, payload) {
             if (x instanceof HTMLElement) {
                 var rect = x.getBoundingClientRect()
                 x = rect.left + rect.width / 2
                 y = rect.top  + rect.height / 2
             }
             this.active = true
-            emit.call(this, 'down', x, y)
+            emit.call(this, 'down', x, y, payload)
             return this
         },
 
-        move: function (x, y) {
-            emit.call(this, 'move', x, y)
+        move: function (x, y, payload) {
+            emit.call(this, 'move', x, y, payload)
             return this
         },
 
-        up: function (x, y) {
+        up: function (x, y, payload) {
             this.active = false
-            emit.call(this, 'up', x, y)
+            emit.call(this, 'up', x, y, payload)
             return this
         },
 
-        moveBy: function (x, y) {
-            this.move(this.x + x, this.y + y)
+        moveBy: function (x, y, payload) {
+            this.move(this.x + x, this.y + y, payload)
         }
 
     }
 
     // private functions for Finger
 
-    function emit (eventName, x, y) {
+    function emit (eventName, x, y, extras) {
         // `this` is a finger instance
         this.x = x || this.x
         this.y = y || this.y
@@ -75,11 +75,11 @@ window.Telekinesis = function () {
             console.warn('"' + eventName + '" out of bound at x:' + this.x + ', y:' + this.y)
             return
         }
-        var payload = createPayload.call(this, target)
+        var payload = createPayload.call(this, target, extras)
         synthesizeEvent(eventName, payload, target)
     }
 
-    function createPayload (target) {
+    function createPayload (target, extras) {
         var left = document.body.scrollLeft || document.documentElement.scrollLeft,
             top = document.body.scrollTop || document.documentElement.scrollTop,
             screenX = window.screenX || window.screenLeft,
@@ -108,6 +108,11 @@ window.Telekinesis = function () {
         } else {
             payload = point
         }
+
+        for (var e in extras) {
+            payload[e] = extras[e]
+        }
+
         return payload
     }
 
@@ -139,13 +144,25 @@ window.Telekinesis = function () {
         var event
         if (eventName.match(mouseRE)) {
             event = document.createEvent('MouseEvents')
+            event.initMouseEvent(eventName, true, true, window, 0,
+                payload.screenX,
+                payload.screenY,
+                payload.clientX,
+                payload.clientY,
+                payload.ctrlKey || false,
+                payload.altKey || false,
+                payload.shiftKey || false,
+                payload.metaKey || false,
+                payload.button || 1,
+                target
+            )
         } else {
             // TouchEvent/PointerEvent not available yet
             event = document.createEvent('CustomEvent')
-        }
-        event.initEvent(eventName, true, true)
-        for (var k in payload) {
-            event[k] = payload[k]
+            event.initEvent(eventName, true, true)
+            for (var k in payload) {
+               event[k] = payload[k]
+            }
         }
         target.dispatchEvent(event)
     }
