@@ -53,7 +53,11 @@ window.Telekinesis = function () {
 
         up: function (x, y, payload) {
             this.active = false
-            emit.call(this, 'up', x, y, payload)
+            if (Object.prototype.toString.call(x) === '[object Object]') {
+                emit.call(this, 'up', null, null, x)
+            } else {
+                emit.call(this, 'up', x, y, payload)
+            }
             return this
         },
 
@@ -130,6 +134,11 @@ window.Telekinesis = function () {
         return res
     }
 
+    function removeAll () {
+        fingers = []
+        id = 0
+    }
+
     function getAllByTarget (target) {
         var res = []
         fingers.forEach(function (f) {
@@ -168,17 +177,9 @@ window.Telekinesis = function () {
     }
 
     return {
-
         Finger: Finger,
-
-        getAll: function () {
-            return fingers.map(function (f) { return f })
-        },
-
-        removeAll: function () {
-            fingers = []
-            id = 0
-        }
+        getAll: getAll,
+        removeAll: removeAll
     }
 
 }();
