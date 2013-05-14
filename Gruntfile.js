@@ -8,6 +8,7 @@ module.exports = function( grunt ) {
                 'eqeqeq': true,
                 'browser': true,
                 'asi': true,
+                'laxbreak': true,
                 'globals': {
                     'console': true,
                     'module': true,

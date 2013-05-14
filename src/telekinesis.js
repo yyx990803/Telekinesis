@@ -2,35 +2,35 @@ window.Telekinesis = function () {
 
     var eventTypes = {
         mouse: {
-            down: 'mousedown',
-            move:  'mousemove',
-            up:   'mouseup'
+            down : 'mousedown',
+            move : 'mousemove',
+            up   : 'mouseup'
         },
         touch: {
-            down: 'touchstart',
-            move:  'touchmove',
-            up:   'touchend'
+            down : 'touchstart',
+            move : 'touchmove',
+            up   : 'touchend'
         },
         pointer: {
-            down: 'pointerdown',
-            move:  'pointermove',
-            up:   'pointerup'
+            down : 'pointerdown',
+            move : 'pointermove',
+            up   : 'pointerup'
         }
     }
 
-    var fingers      = [],
-        id           = 0,
-        touchRE      = /^touch.+/,
-        mouseRE      = /^mouse.+/
+    var fingers  = [],
+        id       = 0,
+        mouseRE  = /^mouse.+/
 
     function Finger (type) {
-        this.identifier = id
-        id += 1
-        this.type = type in eventTypes ? type : getDefaultType()
-        fingers.push(this)
-        // here the x and y === clientX and clientY
+        this.identifier = id++
+        this.type =
+            type in eventTypes
+            ? type
+            : getDefaultType()
         this.x = 0
         this.y = 0
+        fingers.push(this)
     }
 
     Finger.prototype = {
@@ -79,10 +79,10 @@ window.Telekinesis = function () {
 
     function emit (eventName, x, y, extras) {
         // `this` is a finger instance
-        this.x = x || this.x
-        this.y = y || this.y
-        eventName = eventTypes[this.type][eventName]
-        var target = document.elementFromPoint(this.x, this.y)
+        this.x      = x || this.x
+        this.y      = y || this.y
+        eventName   = eventTypes[this.type][eventName]
+        var target  = document.elementFromPoint(this.x, this.y)
         if (!target) {
             console.warn('"' + eventName + '" out of bound at x:' + this.x + ', y:' + this.y)
             return
@@ -92,21 +92,21 @@ window.Telekinesis = function () {
     }
 
     function createPayload (target, extras) {
-        var left = document.body.scrollLeft || document.documentElement.scrollLeft,
-            top = document.body.scrollTop || document.documentElement.scrollTop,
+        var payload,
+            left    = document.body.scrollLeft || document.documentElement.scrollLeft,
+            top     = document.body.scrollTop || document.documentElement.scrollTop,
             screenX = window.screenX || window.screenLeft,
             screenY = window.screenY || window.screenTop,
-            point = {
-                identifier: this.identifier,
-                clientX: this.x,
-                clientY: this.y,
-                screenX: this.x + screenX,
-                screenY: this.y + screenY,
-                pageX: this.x + left,
-                pageY: this.y + top,
-                target: target
-            },
-            payload
+            point   = {
+                identifier : this.identifier,
+                clientX    : this.x,
+                clientY    : this.y,
+                screenX    : this.x + screenX,
+                screenY    : this.y + screenY,
+                pageX      : this.x + left,
+                pageY      : this.y + top,
+                target     : target
+            }
 
         for (var e in extras) {
             if (!(e in point)) {
@@ -119,9 +119,9 @@ window.Telekinesis = function () {
 
         if (this.type === 'touch') {
             payload = {
-                touches: getAll(),
-                changedTouches: [point],
-                targetTouches: getAllByTarget(target)
+                touches        : getAll(),
+                targetTouches  : getAll(target),
+                changedTouches : [point]
             }
         } else {
             payload = point
@@ -131,14 +131,15 @@ window.Telekinesis = function () {
     }
 
     function getDefaultType () {
-        return ('ontouchstart' in window) ? 'touch' : 'mouse'
+        return 'ontouchstart' in window ? 'touch' : 'mouse'
     }
 
     // finger list management
 
-    function getAll () {
+    function getAll (target) {
         var res = []
         fingers.forEach(function (f) {
+            if (target && f.target !== target) return
             if (f.active) res.push(f.point)
         })
         return res
@@ -149,21 +150,14 @@ window.Telekinesis = function () {
         id = 0
     }
 
-    function getAllByTarget (target) {
-        var res = []
-        fingers.forEach(function (f) {
-            if (f.active && f.target === target) res.push(f.point)
-        })
-        return res
-    }
-
     // general custom event dispatcher
 
     function synthesizeEvent (eventName, payload, target) {
         var event
         if (eventName.match(mouseRE)) {
             event = document.createEvent('MouseEvents')
-            event.initMouseEvent(eventName, true, true, window, 0,
+            event.initMouseEvent(
+                eventName, true, true, window, 0,
                 payload.screenX,
                 payload.screenY,
                 payload.clientX,
@@ -187,9 +181,9 @@ window.Telekinesis = function () {
     }
 
     return {
-        Finger: Finger,
-        getAll: getAll,
-        removeAll: removeAll
+        Finger    : Finger,
+        getAll    : getAll,
+        removeAll : removeAll
     }
 
 }();
